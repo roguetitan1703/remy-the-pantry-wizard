@@ -186,8 +186,8 @@ class EdamamRecipeAPI:
             params = {
                 "type": "public",
                 "q": ingerdients,
-                "app_id": "42ead230",
-                "app_key": "bb82f3288bc4da30c43e2663c2ea6c8a"
+                "app_id": app_id,
+                "app_key": app_key
             }
         )
         
@@ -195,13 +195,31 @@ class EdamamRecipeAPI:
         if response.status_code == 200:
             logger.log_message('info', f'Recipes found using ingerdients: {ingerdients}')
             json_resp = response.json()
+            recipes = []
             
-            recipes = [recipe["recipe"]["label"] for recipe in json_resp['hits']]
+            for recipe in json_resp['hits']:
+                recipe = recipe['recipe']
+                temp = {
+                    'uri' : recipe['uri'],
+                    'url' : recipe['url'],
+                    'label' : recipe['label'],
+                    'images' : recipe['images'],
+                    'healthLabels' : recipe['healthLabels'],
+                    'ingredientLines' : recipe['ingredientLines'],
+                    'calories' : recipe['calories'],
+                    'cusineType' : recipe['cusineType'],
+                    'mealType' : recipe['mealType'],
+                    'dishType' : recipe['dishType'],
+                    'totalNutrients' : recipe['totalNutrients']
+                }
+                
+                recipes.append(temp)
+                    
             print(recipes)
         
         else:
             json_resp = response.json()
-            logger.log_message('error', f'Status code: {response.status_code} Error: {json_resp["error"]}')
+            logger.log_message('error', f'Status code: {response.status_code} Error: {json_resp["message"]} Code: {json_resp["errorCode"]}')
             
 
 if __name__ == '__main__':
