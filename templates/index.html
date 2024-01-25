@@ -3,10 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ 
+  <link rel="stylesheet" href="../static/css/style.css">
+
   <title>The Pantry Wizard</title>
 </head>
 <body>
-   <label for="search"></label>
+  <form id="searchform" action="/search" method="GET">
    <input type="text" id="search" name="ingredients">
+   <button type="submit" id="search" class="search">Search</button>
+  </form> 
 </body>
 </html>
