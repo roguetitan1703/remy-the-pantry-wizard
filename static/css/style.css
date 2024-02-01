@@ -1,0 +1,23 @@
+#search-bar:hover {
+  box-shadow: 0 0 15px rgba(0, 110, 255, 0.6) 
+}
+
+#search-bar {
+  transition: box-shadow .3s;
+}
+
+
+.line-clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2; /* Change this line if you want. In this case it trimmed the text to 3 lines. */
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+.line-clamp-5 {
+  -webkit-line-clamp: 5;
+}

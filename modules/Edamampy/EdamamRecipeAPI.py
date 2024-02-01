@@ -174,8 +174,8 @@ logger = Logger('EdamamRecipeAPI', f'{log_data_path}EdamamRecipeAPI.log', log_to
 # The Edamam Recipe API to search for recipes using ingerdients
 class EdamamRecipeAPI:
     @staticmethod
-    
-    def search_recipes(ingerdients):
+    # Function to search for recipes using ingerdients
+    def search_recipes(ingerdients) -> list:
         logger.log_message('info', f'Searching for recipes using ingerdients: {ingerdients}')
         
         # Send a get request to the api
@@ -204,24 +204,27 @@ class EdamamRecipeAPI:
                     'uri' : recipe['uri'],
                     'url' : recipe['url'],
                     'label' : recipe['label'],
-                    'images' : recipe['images'],
+                    'image' : recipe['image'],
                     'healthLabels' : recipe['healthLabels'],
-                    'ingredientLines' : recipe['ingredientLines'],
+                    'ingredientLines' : ','.join(recipe['ingredientLines']),
+                    'ingredients' : recipe['ingredients'],
                     'calories' : recipe['calories'],
                     'cuisineType' : recipe['cuisineType'],
                     'mealType' : recipe['mealType'],
-                    'dishType' : recipe['dishType'],
+                    # 'dishType' : recipe['dishType'],
                     'totalNutrients' : recipe['totalNutrients']
                 }
                 
                 recipes.append(temp)
                     
-            print(recipes)
+            return recipes
         
         else:
             json_resp = response.json()
-            print(json_resp)
+            # print(json_resp)
             logger.log_message('error', f'Status code: {response.status_code} Error: {json_resp["message"]} Url: {response.url}')
+            
+            return []
             
 
 if __name__ == '__main__':
