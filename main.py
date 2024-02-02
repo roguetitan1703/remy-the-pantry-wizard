@@ -28,13 +28,20 @@ async def index(request: Request):
 
 
 @app.get('/search', response_class=JSONResponse)
-async def search(request: Request, ingredients: str = None):
-    if ingredients is not None:
+async def search(request: Request, ingredients: str = ''):
+    if ingredients != '':
         print(f"Received ingredients: {ingredients}")
+        # print(len(ingredients), type(ingredients))
         recipes = ERA.search_recipes(ingredients)
         # Assuming recipes is a list of dictionaries (JSON data)
-        # print("here" ,recipes)
         return recipes
 
     # If ingredients are not provided or None, return an empty list
+    print("No ingredients recieved")
     return []
+
+@app.get('/recipe', response_class=JSONResponse)
+async def recipe(request: Request, recipeLabel: str = ''):
+    if recipeLabel != '':
+        print(f"Received recipeLabel: {recipeLabel}")
+        

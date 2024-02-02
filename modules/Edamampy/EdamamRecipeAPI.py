@@ -2,6 +2,8 @@
 import requests, webbrowser, http.server, socketserver, threading
 import base64, json
 from urllib.parse import urlencode
+import random, string
+import string
 
 # Importing modules for paths and environment file
 import os, sys, time
@@ -173,6 +175,7 @@ logger = Logger('EdamamRecipeAPI', f'{log_data_path}EdamamRecipeAPI.log', log_to
 
 # The Edamam Recipe API to search for recipes using ingerdients
 class EdamamRecipeAPI:
+    
     @staticmethod
     # Function to search for recipes using ingerdients
     def search_recipes(ingerdients) -> list:
@@ -201,13 +204,15 @@ class EdamamRecipeAPI:
             for recipe in json_resp['hits']:
                 recipe = recipe['recipe']
                 temp = {
+                    'id' : EdamamRecipeAPI.generate_random_string(),
                     'uri' : recipe['uri'],
                     'url' : recipe['url'],
                     'label' : recipe['label'],
                     'image' : recipe['image'],
                     'healthLabels' : recipe['healthLabels'],
                     'ingredientLines' : ','.join(recipe['ingredientLines']),
-                    'ingredients' : recipe['ingredients'],
+                    'ingredients' : recipe['ingredientLines'],
+                    # 'ingredients' : recipe['ingredients'],
                     'calories' : recipe['calories'],
                     'cuisineType' : recipe['cuisineType'],
                     'mealType' : recipe['mealType'],
@@ -226,6 +231,10 @@ class EdamamRecipeAPI:
             
             return []
             
+    @staticmethod
+    def generate_random_string(length = 10):
+        characters = string.ascii_lowercase + string.digits
+        return ''.join(random.choice(characters) for _ in range(length))
 
 if __name__ == '__main__':
     ingredients = input("Enter ingredients: ")

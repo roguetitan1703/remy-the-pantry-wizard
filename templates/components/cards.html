@@ -1,0 +1,40 @@
+<div id="cards-container" class="container my-4">
+  <div id="cards-row" class="row mb-2">
+    <div class="col md-4">
+      <div
+        class="row card clickable-card g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative"
+        style="width: 18rem; cursor: pointer;">
+        <img src="${recipe.image}" class="card-img-top" alt="...">
+        <div class="card-body">
+          <h5 class="line-clamp card-title">${recipe.label}</h5>
+          <p class="line-clamp line-clamp-5 card-text">${recipe.ingredientLines}</p>
+        </div>
+        <div class="card-body">
+          <hr>
+          <div class="btn-toolbar justify-content-between">
+            <div class="btn-group">
+              <a href="${recipe.url}" class="btn btn-outline-primary justify-content-center card-link">Go to recipe</a>
+            </div>
+            <div class="btn-group">
+              <button href="#" class="save-recipe btn btn-outline-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+                  class="unsaved-icon bi bi-bookmark-heart" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd" d="M8 4.41c1.387-1.425 4.854 1.07 0 4.277C3.146 5.48 6.613 2.986 8 4.412z">
+                  </path>
+                  <path
+                    d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.777.416L8 13.101l-5.223 2.815A.5.5 0 0 1 2 15.5zm2-1a1 1 0 0 0-1 1v12.566l4.723-2.482a.5.5 0 0 1 .554 0L13 14.566V2a1 1 0 0 0-1-1z">
+                  </path>
+                </svg>
+                <svg style="display: none;" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                  fill="currentColor" class="saved-icon bi bi-bookmark-check-fill" viewBox="0 0 16 16">
+                  <path fill-rule="evenodd"
+                    d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5m8.854-9.646a.5.5 0 0 0-.708-.708L7.5 7.793 6.354 6.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -21,3 +21,17 @@
 .line-clamp-5 {
   -webkit-line-clamp: 5;
 }
+
+.empty-message {
+  text-align: center;
+  margin-top: 50px; /* Adjust as needed */
+}
+
+
+.message {
+  margin-top: 18px;
+  font-size: 24px;
+}
+
+
+
