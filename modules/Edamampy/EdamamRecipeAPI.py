@@ -204,7 +204,7 @@ class EdamamRecipeAPI:
             for recipe in json_resp['hits']:
                 recipe = recipe['recipe']
                 temp = {
-                    'id' : EdamamRecipeAPI.generate_random_string(),
+                    'id' : EdamamRecipeAPI.make_id(recipe['uri']),
                     'uri' : recipe['uri'],
                     'url' : recipe['url'],
                     'label' : recipe['label'],
@@ -235,6 +235,10 @@ class EdamamRecipeAPI:
     def generate_random_string(length = 10):
         characters = string.ascii_lowercase + string.digits
         return ''.join(random.choice(characters) for _ in range(length))
+    
+    @staticmethod
+    def make_id(uri):
+        return uri.split('recipe_')[1]
 
 if __name__ == '__main__':
     ingredients = input("Enter ingredients: ")

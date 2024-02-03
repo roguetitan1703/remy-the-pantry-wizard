@@ -11,7 +11,7 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-  <script src="../static/js/index_script.js"></script>
+  <script src="../static/js/saved_recipes_script.js"></script>
 </head>
 
 <body>
@@ -32,10 +32,10 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
+            <a class="nav-link" href="/index">Home</a>
           </li>
           <li class="nav-item">
-            <a id="savedRecipesLink" class="nav-link" href="/saved-recipes">Saved Recipes</a>
+            <a id="savedRecipesLink" class="nav-link active" aria-current="page" href="#">Saved Recipes</a>
           </li>
         </ul>
         <!-- Button trigger modal -->
@@ -54,6 +54,7 @@
                   <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
                   <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
                 </svg>
+                <!-- <img src="https://github.com/mdo.png" alt="..." width="32" height="32" class="rounded-circle"> -->
               </a>
               <ul class="dropdown-menu text-small" style>
                 <li><a id="logged-username" class="dropdown-item" href="#">Profile</a></li>
@@ -149,31 +150,6 @@
         </div>
       </div>
     </div>
-  </div>
-
-
-  <!-- Search Recipe -->
-  <div class="container my-4">
-    <form id="search-form" class="row mb-2" action="javascript:void(0)">
-      <div class="col-sm-10">
-        <div class="row g-0 border rounded mb-4 shadow-sm h-md-250 position-relative">
-          <input id="search-bar" name="ingredients" type="search" class="col-6 form-control focus-ring"
-            placeholder="Search for recipes..." aria-label="Search">
-        </div>
-      </div>
-      <div class="col-sm-2">
-        <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-          <button id="search-button" type="submit" class="btn btn-outline-success">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
-              viewBox="0 0 16 16">
-              <path
-                d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0">
-              </path>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </form>
   </div>
 
   <!-- cards -->

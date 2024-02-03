@@ -6,6 +6,13 @@
   transition: box-shadow .3s;
 }
 
+#signup-message {
+  color: red;
+}
+
+#login-message {
+  color: red;
+}
 
 .line-clamp {
   display: -webkit-box;
