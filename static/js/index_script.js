@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (searchQuery) {
             await fetchAndDisplayCards(searchQuery);
             
-            await checkForSavedRecipes();
+            await refreshSavedRecipes();
 
         }       
     });
@@ -117,7 +117,7 @@ async function fetchAndDisplayCards(ingredients) {
               <div class="modal-content">
                 <div class="modal-header">
                   <h1 class="modal-title fs-5" id="modalTitle">View Recipe</h1>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <button type="button" class="recipeModal btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body row" id="modalBody">
                   <div class="col-md-6">
@@ -194,7 +194,7 @@ async function fetchAndDisplayCards(ingredients) {
         // Add click event listener to all buttons with the class 'save-recipe'
         const saveButtons = document.querySelectorAll('.save-recipe');
         saveButtons.forEach(button => {
-            button.addEventListener('click', handleSaveRecipe);
+            button.addEventListener('click', toggleSaveRecipe);
         });
 
         // Add click event listener to all buttons with the class 'goto-recipe'
@@ -206,12 +206,6 @@ async function fetchAndDisplayCards(ingredients) {
     } catch (error) {
         console.error('Error fetching and displaying cards:', error);
     }
-}
-
-// set logged status
-if (!localStorage.getItem('logged_in'))
-{
-    localStorage.setItem('logged_in', 'false');
 }
 
 // Functions to handle cards-click-save-goto
@@ -247,27 +241,29 @@ async function handleCardClick(event) {
     }
 }
 
-async function handleSaveRecipe(event) {
-    // Prevent the default button click behavior
+async function toggleSaveRecipe(event) {
     event.preventDefault(); 
-
-    // Stop the event propagation to prevent triggering the parent clickable card
     event.stopPropagation();
-
-    // Get the recipe ID associated with the clicked button
-    const recipeId = this.closest('.recipe').getAttribute('data-recipe-id');
-    console.log(`Recipe ID: ${recipeId}`);
-
-    // Checking if user is logged in or not
+    
     if (localStorage.getItem('logged_in') === 'false') {
-        // Show the login modal
         const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
         loginModal.show();
+
+        const modalBackDrops = document.querySelectorAll('.modal-backdrop');
+        const lastModalBackDrop = modalBackDrops.item(modalBackDrops.length - 1);
+        lastModalBackDrop.style.zIndex = 1499;
+
     } else {
 
         try {
-            // Send the recipe data to the server
-            const response = await fetch('/save-recipe', {
+            const recipeId = this.closest('.recipe').getAttribute('data-recipe-id');
+            console.log(`Recipe ID: ${recipeId}`);
+
+            // Toggle save button icons and classes for both modal and card
+            toggleSaveButton(recipeId);
+            
+            // Send a toggle request
+            const response = await fetch('/toggle-save-recipe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -277,43 +273,43 @@ async function handleSaveRecipe(event) {
                     'username': localStorage.getItem('logged_username')                    
                 })                
             });
-
+            
             const data = await response.json();
-
-            // Handle the response from the server if needed
+            
             if (data.status === 'success') {
-                // Show a success message
                 console.log(data.message);
-
-                // Toggle save button for card
-                toggleSaveButton(this);
-
-                // Toggle save button for modal
-                const modalId = recipeId;
-                const modalSaveButton = document.getElementById(modalId).querySelector('.save-recipe');
-                toggleSaveButton(modalSaveButton);
-            } else {
-                console.log(data);
+                
             }
-
         } catch (error) {
             console.error('Error saving recipe:', error);
         }
     }
 }
 
-function toggleSaveButton(button) {
-    // Toggle between regular and saved icons for the clicked button
-    const unsavedIcon = button.querySelector('.unsaved-icon');
-    const savedIcon = button.querySelector('.saved-icon');
+function toggleSaveButton(recipeId) {
+    // Get the corresponding save button in the modal
+    const modalSaveButton = document.querySelector(`.modal.recipe[data-recipe-id="${recipeId}"] .save-recipe`);
+    // Get the corresponding save button in the card
+    const cardSaveButton = document.querySelector(`.card.recipe[data-recipe-id="${recipeId}"] .save-recipe`);
+
+    // For the Modal
+    let unsavedIcon = modalSaveButton.querySelector('.unsaved-icon');
+    let savedIcon = modalSaveButton.querySelector('.saved-icon');
+    
     unsavedIcon.style.display = unsavedIcon.style.display === 'none' ? 'block' : 'none';
     savedIcon.style.display = savedIcon.style.display === 'none' ? 'block' : 'none';
+    modalSaveButton.classList.toggle('btn-outline-danger');
+    modalSaveButton.classList.toggle('btn-danger');
 
-    // Toggle button class between btn-outline-danger and btn-danger
-    button.classList.toggle('btn-outline-danger');
-    button.classList.toggle('btn-danger');
+    // For the Card 
+    unsavedIcon = cardSaveButton.querySelector('.unsaved-icon');
+    savedIcon = cardSaveButton.querySelector('.saved-icon');
+    
+    unsavedIcon.style.display = unsavedIcon.style.display === 'none' ? 'block' : 'none';
+    savedIcon.style.display = savedIcon.style.display === 'none' ? 'block' : 'none';
+    cardSaveButton.classList.toggle('btn-outline-danger');
+    cardSaveButton.classList.toggle('btn-danger');
 }
-
 
 async function handleGotoRecipe(event) {
     // Prevent the default button click behavior
@@ -329,7 +325,9 @@ async function handleGotoRecipe(event) {
     window.location.href = recipeUrl;
 }
 
-async function checkForSavedRecipes() {
+async function refreshSavedRecipes() {
+    
+
     // Check if the user is logged in
     const loggedIn = localStorage.getItem('logged_in');
     if (!loggedIn) {
@@ -365,26 +363,12 @@ async function checkForSavedRecipes() {
 
             // Check if the recipe ID is in the saved recipes array
             if (savedRecipes.some(recipe => recipe.id === recipeId)) {
-                // Toggle the save button to 'saved' in the card
-                const saveButton = card.querySelector('.save-recipe');
-                const unsavedIcon = saveButton.querySelector('.unsaved-icon');
-                const savedIcon = saveButton.querySelector('.saved-icon');
 
-                unsavedIcon.style.display = 'none';
-                savedIcon.style.display = 'block';
-                saveButton.classList.remove('btn-outline-danger');
-                saveButton.classList.add('btn-danger');
-
-                // Toggle the save button to 'saved' in the modal
-                const modalId = recipeId;
-                const modalSaveButton = document.getElementById(modalId).querySelector('.save-recipe');
-
-                modalSaveButton.querySelector('.unsaved-icon').style.display = 'none';
-                modalSaveButton.querySelector('.saved-icon').style.display = 'block';
-                modalSaveButton.classList.remove('btn-outline-danger');
-                modalSaveButton.classList.add('btn-danger');
+                // Toggle both the card and the modal save button
+                toggleSaveButton(recipeId);
             }
         });
+
     } catch (error) {
         console.error('Error fetching saved recipes:', error);
     }
@@ -461,6 +445,9 @@ async function handleSignup(event) {
                 // Close the sign-up modal
                 document.getElementById('signup-close').click();
 
+                // Refresh savee recipes
+                await refreshSavedRecipes();
+
             }
             
             else {
@@ -526,6 +513,10 @@ async function handleLogin(event) {
                
                 // Close the login-up modal
                 document.getElementById('login-close').click();
+
+                
+                // Refresh savee recipes
+                await refreshSavedRecipes();
             }
 
             else {
@@ -563,8 +554,10 @@ async function handleClose(event) {
 
 async function handleLogout(event) {
     event.preventDefault();
-
+    
     try {
+        
+        await refreshSavedRecipes();
 
         const response = await fetch('/logout', {
             method: 'POST',
@@ -599,6 +592,7 @@ async function handleLogout(event) {
             const loggedOutButtons = document.getElementById('logged-out');
             loggedInButtons.style.display = 'none'
             loggedOutButtons.style.display = 'block'
+
         }
 
         else {
@@ -612,8 +606,14 @@ async function handleLogout(event) {
 }   
 
 async function checkLoggedInStatus() {
-    if (localStorage.getItem('logged_in') === 'true') {
+    
+    // set logged status if doesn't exists
+    if (!localStorage.getItem('logged_in'))
+    {
+        localStorage.setItem('logged_in', 'false');
+    }
 
+    if (localStorage.getItem('logged_in') === 'true') {
         // adding logged user name
         const loggedName = document.getElementById('logged-username') ;
         loggedName.innerHTML = localStorage.getItem('logged_firstname');
@@ -625,3 +625,26 @@ async function checkLoggedInStatus() {
         loggedOutButtons.style.display = 'none'
     }
 }
+
+// Modal toggles
+
+// JavaScript function to show the login modal and adjust z-index of the modal backdrop
+function showLoginModal() {
+    const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+    loginModal.show();
+  
+    const modalBackDrops = document.querySelectorAll('.modal-backdrop');
+    const lastModalBackDrop = modalBackDrops.item(modalBackDrops.length - 1);
+    lastModalBackDrop.style.zIndex = 1499;
+  }
+  
+  // JavaScript function to show the signup modal and adjust z-index of the modal backdrop
+function showSignupModal() {
+    const signupModal = new bootstrap.Modal(document.getElementById('signupModal'));
+    signupModal.show();
+  
+    const modalBackDrops = document.querySelectorAll('.modal-backdrop');
+    const lastModalBackDrop = modalBackDrops.item(modalBackDrops.length - 1);
+    lastModalBackDrop.style.zIndex = 1499;
+  }
+  

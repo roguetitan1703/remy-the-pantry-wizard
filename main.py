@@ -4,6 +4,8 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from passlib.hash import bcrypt
 from pymongo import MongoClient
+import os, requests, copy
+from pprint import pprint
 
 # Local imports
 from modules.Edamampy.EdamamRecipeAPI import EdamamRecipeAPI as ERA
@@ -51,7 +53,7 @@ async def search(request: Request, ingredients: str = ''):
         recipes = ERA.search_recipes(ingredients)
         
         # Save recipe temporarily
-        save_recipe_temporarily(recipes)
+        save_recipe_to_local_db(recipes)
         
         # Assuming recipes is a list of dictionaries (JSON data)
         return recipes
@@ -61,19 +63,40 @@ async def search(request: Request, ingredients: str = ''):
     return []
 
 
-@app.post('/save-recipe', response_class=JSONResponse)
-async def save_recipe_to_db(request: Request, data: dict):
+@app.post('/toggle-save-recipe', response_class=JSONResponse)
+async def toggle_save_recipe_to_db(request: Request, data: dict):
     username = data["username"]
     recipe_id = data["id"]
     
-    print(f"Received request to save recipe with ID: {recipe_id} for user: {username}")
+    print(f"Received request to save/unsave recipe with ID: {recipe_id} for user: {username}")
 
     # Check if the recipe is already saved
-    existing_recipe = users.find_one({"username": username, "saved_recipes.id": recipe_id})
-    if existing_recipe:
-        print("Recipe already saved for this user.")
-        return {"status": "success", "message": "Recipe already saved"}
+    existing_recipe = users.find_one({"username": username, "saved_recipes.id": recipe_id},{"saved_recipes.$": 1, "_id": 0})
 
+    # Recipe already exists for this user, delete it
+    if existing_recipe:
+        
+        recipe = existing_recipe["saved_recipes"][0]
+        
+        print("Recipe already exists for this user, Unsaving it.")
+        # pprint(existing_recipe)
+        
+        # Delete the associated image file
+        image_path = recipe.get("image")
+        print("image path for the existing_recipe: ", image_path)
+        try:
+            os.remove(image_path)
+            print(f"Image file '{image_path}' deleted successfully.")
+        except Exception as e:
+            print(f"Error deleting image file: {e}")
+
+        users.update_one({"username": username}, {"$pull": {"saved_recipes": {"id": recipe_id}}})
+        
+        print("Recipe unsaved for this user.")
+        return {"status": "success", "saved": False, "message": "Recipe unsaved successfully"}
+
+
+    # Recipe does not exist, save it
     # Find the recipe in the local database based on recipe_id
     recipe = next((recipe for recipe in local_db if recipe.get("id") == recipe_id), None)
 
@@ -81,11 +104,30 @@ async def save_recipe_to_db(request: Request, data: dict):
         print("Recipe not found in local database.")
         return {"status": "error", "message": "Recipe not found in local db"}
 
+    # Download and save the image locally
+    image_url = recipe.get("image")
+    image_filename = f"{recipe_id}.jpg"  # Assuming the image format is JPEG
+    image_path = os.path.join("static", "img", image_filename)
+    
+    try:
+        response = requests.get(image_url)
+        with open(image_path, "wb") as f:
+            f.write(response.content)
+            print(f"Image downloaded and saved to {image_path}")
+            
+    except Exception as e:
+        print(f"Error downloading image: {e}")
+        return {"status": "error", "message": "Error downloading image"}
+
+     # Create a copy of the recipe to avoid modifying the original instance
+    recipe_copy = copy.deepcopy(recipe)
+    recipe_copy["image"] = image_path
+
     # Add the recipe to the user's saved recipes
-    users.update_one({"username": username}, {"$push": {"saved_recipes": recipe}})
+    users.update_one({"username": username}, {"$push": {"saved_recipes": recipe_copy}})
     
     print("Recipe saved successfully.")
-    return {"status": "success", "message": "Recipe saved successfully"}
+    return {"status": "success", "saved": True, "message": "Recipe saved successfully"}
 
 
 @app.post('/get-saved-recipes', response_class=JSONResponse)
@@ -98,6 +140,7 @@ async def get_saved_recipes(request: Request, data: dict):
         return saved_recipes["saved_recipes"]
     else:
         return []
+    
 
 @app.post("/login")
 async def login(request: Request, user_credentials: dict):
@@ -195,7 +238,7 @@ async def logout(request: Request, user_credentials: dict):
 
 
 # saves recipe to local_db json temporarily
-def save_recipe_temporarily(recipes):
+def save_recipe_to_local_db(recipes):
     global local_db
     local_db = recipes
     

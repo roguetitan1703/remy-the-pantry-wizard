@@ -14,6 +14,10 @@
   color: red;
 }
 
+.remove-underline {
+  text-decoration: none;
+}
+
 .line-clamp {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -31,7 +35,18 @@
 
 .empty-message {
   text-align: center;
-  margin-top: 50px; /* Adjust as needed */
+  margin-top: 250px; /* Adjust as needed */
+}
+
+.no-recipe-saved-message {
+  text-align: center;
+  margin-top: 250px; /* Adjust as needed */
+
+}
+
+.login-prompt-message {
+  text-align: center;
+  margin-top: 250px; /* Adjust as needed */
 }
 
 

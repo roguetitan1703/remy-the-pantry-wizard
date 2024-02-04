@@ -75,7 +75,7 @@
 
 
   <!-- login / signup modals -->
-  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+  <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true" style="z-index: 1500">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -92,10 +92,12 @@
               <input type="password" class="form-control rounded-3" id="login-floatingPassword" placeholder="Password">
               <label for="floatingPassword">Password</label>
             </div>
-            <div class="form-group form-check mb-3">
+            <!-- <div class="form-group form-check mb-3">
               <input type="checkbox" class="form-check-input" id="remembercheck">
               <label class="form-check-label" for="remembercheck">Remember me</label>
-            </div>
+            </div> -->
+            <div><!-- Link to Signup Modal -->
+              <p>Not a member? <a href="#" class="remove-underline text-success" data-bs-dismiss="modal" onclick="showSignupModal()">Sign Up</a></p></div>
             <div id="login-message" class="mb-3"></div>
             <button id="login-button" class="w-100 mb-2 btn btn-lg rounded-3 btn-success" type="submit">Login</button>
           </form>
@@ -104,7 +106,7 @@
     </div>
   </div>
 
-  <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true">
+  <div class="modal fade" id="signupModal" tabindex="-1" aria-labelledby="signupModalLabel" aria-hidden="true" style="z-index: 1500;">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -141,6 +143,7 @@
                 placeholder="Confirm Password">
               <label for="floatingCPassword">Confirm Password</label>
             </div>
+            <div><p>Already a member? <a href="#" class="remove-underline text-primary" data-bs-dismiss="modal" onclick="showLoginModal()">Log In</a></p></div>
             <div id="signup-message" class="mb-3"></div>
             <button id="signup-button" class="w-100 mb-2 btn btn-lg rounded-3 btn-warning" type="submit">Sign
               up</button>
