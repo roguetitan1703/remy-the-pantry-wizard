@@ -280,6 +280,7 @@ async function toggleSaveRecipe(event) {
                 console.log(data.message);
                 
             }
+            
         } catch (error) {
             console.error('Error saving recipe:', error);
         }
